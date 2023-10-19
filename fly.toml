@@ -1,4 +1,4 @@
-app = "try-app-afe3"
+app = "try-app"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
