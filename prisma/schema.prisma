@@ -8,31 +8,78 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id        String @id @unique @default(cuid())
+  email     String @unique
+  type      String
+  firstName String
+  lastName  String
+
+  data String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password Password?
-  notes    Note[]
+  comments Comment[]
+
+  tasks      TaskUser[]
+  subscriber Subscriber?
 }
 
-model Password {
-  hash String
+model Subscriber {
+  id        String @id @default(cuid())
+  company   String
+  paymentId String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Task {
+  id          String @id @default(cuid())
+  title       String
+  description String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  state   State  @relation(fields: [stateId], references: [id])
+  stateId String
+
+  comments Comment[]
+  users    TaskUser[]
+}
+
+model TaskUser {
+  id    String @id @default(cuid())
+  index Int
+
+  task   Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId String
+
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId String
 }
+
+model State {
+  id      String @id @default(cuid())
+  stateId String @unique
+  name    String @unique
+  tasks   Task[]
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  content String
+
+  data String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task   Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
